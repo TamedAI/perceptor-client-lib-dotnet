@@ -1,4 +1,20 @@
-﻿using System;
+﻿// /*
+// Copyright 2023 TamedAI GmbH
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -23,7 +39,7 @@ namespace Perceptor.Client.Lib.Repository
 		private readonly Lazy<string> _lazyUrlMethodClassify;
 		private readonly PerceptorRepositoryHttpClientSettings _settings;
 
-		public PerceptorHttpRepository(PerceptorRepositoryHttpClientSettings settings, 
+		public PerceptorHttpRepository(PerceptorRepositoryHttpClientSettings settings,
 			IHttpClientFacade httpClientFacade)
 		{
 			_settings = settings;
@@ -37,7 +53,7 @@ namespace Perceptor.Client.Lib.Repository
 
 			_lazyUrlMethodGenerateTable = new Lazy<string>(() => ConcatUrl(settings.Url, "generate_table"),
 				LazyThreadSafetyMode.ExecutionAndPublication);
-			
+
 			_lazyUrlMethodClassify = new Lazy<string>(() => ConcatUrl(settings.Url, "classify"),
 				LazyThreadSafetyMode.ExecutionAndPublication);
 		}
@@ -71,11 +87,12 @@ namespace Perceptor.Client.Lib.Repository
 			message.Headers.Add("Authorization", _lazyAuthorizationHeader.Value);
 			message.Content = new StringContent(bodyText,
 				Encoding.UTF8, "application/json");
-			
+
 			return message;
 		}
 
-		private static async Task<OneOf<PerceptorSuccessResult, PerceptorError>> ProcessClientResponse(IHttpClientResponse clientResponse)
+		private static async Task<OneOf<PerceptorSuccessResult, PerceptorError>> ProcessClientResponse(
+			IHttpClientResponse clientResponse)
 		{
 			return clientResponse switch
 			{
@@ -84,16 +101,18 @@ namespace Perceptor.Client.Lib.Repository
 				_ => ErrorConstants.UnknownError
 			};
 		}
-		private static async Task<OneOf<PerceptorSuccessResult, PerceptorError>> MapHttpResponseMessage(HttpResponseMessage response)
+
+		private static async Task<OneOf<PerceptorSuccessResult, PerceptorError>> MapHttpResponseMessage(
+			HttpResponseMessage response)
 		{
 			using HttpResponseMessage disposableMessage = response;
-			
+
 			return disposableMessage.StatusCode switch
 			{
 				HttpStatusCode.OK => await ParseSuccessResponse(disposableMessage),
 				HttpStatusCode.Forbidden => ErrorConstants.InvalidApiKey,
-				HttpStatusCode.BadRequest  => await ParseBadRequestResponse(disposableMessage),
-				HttpStatusCode.NoContent =>await ParseBadRequestResponse(disposableMessage),
+				HttpStatusCode.BadRequest => await ParseBadRequestResponse(disposableMessage),
+				HttpStatusCode.NoContent => await ParseBadRequestResponse(disposableMessage),
 				_ => ErrorConstants.UnknownError
 			};
 

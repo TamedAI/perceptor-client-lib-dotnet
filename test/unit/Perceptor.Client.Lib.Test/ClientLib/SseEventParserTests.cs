@@ -1,4 +1,20 @@
-﻿using FluentAssertions;
+﻿// /*
+// Copyright 2023 TamedAI GmbH
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// */
+
+using FluentAssertions;
 using Perceptor.Client.Lib.InternalModels;
 using Perceptor.Client.Lib.Repository;
 
@@ -28,8 +44,8 @@ data: Hans Mustermann
 ",
 			new object[] { new SsEvent("Hans Mustermann") }
 		},
-		new object[]{"", Array.Empty<object>()},
-		new object[]{"event: waiting", Array.Empty<object>()},
+		new object[] { "", Array.Empty<object>() },
+		new object[] { "event: waiting", Array.Empty<object>() },
 		new object[]
 		{
 			@"event: waiting
@@ -41,7 +57,7 @@ data:
 ",
 			Array.Empty<object>()
 		},
-		
+
 		new object[]
 		{
 			@"
@@ -53,7 +69,7 @@ data: Another answer
 ",
 			new object[] { new SsEvent("First Answer"), new SsEvent("Another answer") }
 		},
-		
+
 		new object[]
 		{
 			@"

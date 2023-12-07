@@ -1,4 +1,20 @@
-﻿using System.Net;
+﻿// /*
+// Copyright 2023 TamedAI GmbH
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// */
+
+using System.Net;
 using FluentAssertions;
 using Moq;
 using Perceptor.Client.Lib.Configuration;
@@ -35,14 +51,16 @@ public class PerceptorHttpRepositoryTests
 		new object?[] { HttpStatusCode.InternalServerError, "unknown error", ErrorConstants.UnknownError.ErrorText },
 	};
 
-	private static readonly PerceptorRequestPayload _notRelevantRequestPayload = new(PerceptorRequest.WithFlavor("original"),
+	private static readonly PerceptorRequestPayload _notRelevantRequestPayload = new(
+		PerceptorRequest.WithFlavor("original"),
 		InstructionMethod.Question,
 		InstructionContextData.ForText("not relevant"),
-		new Instruction("some instruction"), 
+		new Instruction("some instruction"),
 		Array.Empty<ClassificationEntry>());
 
 	[TestCaseSource(nameof(_testCaseDataErrorHttpCodes))]
-	public async Task WHEN_HttpError_THEN_HttpResponse_Mapped_Correctly(HttpStatusCode statusCode, string? responseText, string errorText)
+	public async Task WHEN_HttpError_THEN_HttpResponse_Mapped_Correctly(HttpStatusCode statusCode, string? responseText,
+		string errorText)
 	{
 		var expectedResult = new PerceptorError(errorText);
 		SetupHttpReturns(statusCode, responseText);
@@ -59,7 +77,7 @@ public class PerceptorHttpRepositoryTests
 		Enum.GetValues<InstructionMethod>()
 			.Select(x => new object[] { x })
 			.ToArray();
-	
+
 	[TestCaseSource(nameof(_allMethods))]
 	public async Task GIVEN_Method_WHEN_HttpSuccess_THEN_ResponseIsPresent(int method)
 	{
@@ -73,14 +91,13 @@ public class PerceptorHttpRepositoryTests
 			{
 				new("class1"), new("class2")
 			});
-		
+
 		var responseModel = await _sut.SendInstruction(_notRelevantRequestPayload, CancellationToken.None);
-		
+
 		responseModel.Use(
 			success => success.Answer.Should().Be(expectedAnswer),
 			perceptorError => Assert.Fail(perceptorError.ErrorText)
 		);
-		
 	}
 
 	[TestCase("first", "second", "first/second")]

@@ -11,7 +11,7 @@
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
             <_Parameter1>Perceptor.Client.Lib.Test</_Parameter1>
-        </AssemblyAttribute>        
+        </AssemblyAttribute>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
             <_Parameter1>Perceptor.Client.Lib.DotNetFrmwk.Test</_Parameter1>
         </AssemblyAttribute>
@@ -21,13 +21,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Flurl" Version="3.0.7" />
-      <PackageReference Include="Polly" Version="7.2.4" />
-      <PackageReference Include="System.Text.Json" Version="7.0.3" />
+        <PackageReference Include="Flurl" Version="3.0.7"/>
+        <PackageReference Include="Polly" Version="7.2.4"/>
+        <PackageReference Include="System.Text.Json" Version="7.0.3"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="README.md" Pack="true" PackagePath="" />
+        <None Include="README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
 
     <PropertyGroup>

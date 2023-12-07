@@ -1,3 +1,19 @@
+// /*
+// Copyright 2023 TamedAI GmbH
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// */
+
 using AutoFixture;
 using FluentAssertions;
 using Moq;
@@ -18,7 +34,7 @@ public class ClientTests
 	public void Setup()
 	{
 		_repositoryMock = new Mock<IPerceptorRepository>();
-		var s = new ClientSettings( "key", "some_url"){WaitTimeout = TimeSpan.FromSeconds(40) };
+		var s = new ClientSettings("key", "some_url") { WaitTimeout = TimeSpan.FromSeconds(40) };
 
 		_sut = PerceptorClientFactory.CreateForRepository(s, _repositoryMock.Object);
 
@@ -42,7 +58,7 @@ public class ClientTests
 			request, instructions);
 
 		res.Should().HaveCount(instructions.Length);
-		
+
 		VerifyMockCalled(request, InstructionMethod.Question, Times.Exactly(instructions.Length));
 	}
 
@@ -125,7 +141,7 @@ public class ClientTests
 			instructions);
 
 		res.Should().HaveCount(instructions.Length);
-		
+
 		VerifyMockCalled(request, InstructionMethod.Question, Times.Exactly(instructions.Length));
 	}
 
@@ -148,7 +164,7 @@ public class ClientTests
 			instructions);
 
 		res.Should().HaveCount(instructions.Length);
-		
+
 		VerifyMockCalled(request, InstructionMethod.Question, Times.Exactly(instructions.Length));
 	}
 
@@ -170,7 +186,7 @@ public class ClientTests
 			instructions);
 
 		res.Should().HaveCount(instructions.Length);
-		
+
 		VerifyMockCalled(request, InstructionMethod.Question, Times.Exactly(instructions.Length));
 	}
 
@@ -347,7 +363,7 @@ public class ClientTests
 
 		VerifyMockCalled(request, InstructionMethod.Classify, Times.Once());
 	}
-	
+
 	[Test]
 	public async Task WITH_CustomParameters_WHEN_ClassifyImage_FromFile_THEN_Repository_Called_With_Parameters()
 	{
@@ -355,22 +371,22 @@ public class ClientTests
 		await GetClassifyImageMethod(request, TestHelperMethods.GetTestFilePath("binary_file.png"))();
 		VerifyMockCalled(request, InstructionMethod.Classify, Times.Once());
 	}
-	
+
 	[Test]
 	public async Task WITH_CustomParameters_WHEN_ClassifyImage_FromStream_THEN_Repository_Called_With_Parameters()
 	{
 		await using Stream imageStream1 = File.OpenRead(TestHelperMethods.GetTestFilePath("binary_file.png"));
 		PerceptorRequest request = CreatePerceptorRequest();
-		await GetClassifyImageMethod(request, (imageStream1, "png") )();
+		await GetClassifyImageMethod(request, (imageStream1, "png"))();
 		VerifyMockCalled(request, InstructionMethod.Classify, Times.Once());
 	}
-	
+
 	[Test]
 	public async Task WITH_CustomParameters_WHEN_ClassifyImage_FromBytes_THEN_Repository_Called_With_Parameters()
 	{
 		byte[] imageBytes1 = await File.ReadAllBytesAsync(TestHelperMethods.GetTestFilePath("binary_file.png"));
 		PerceptorRequest request = CreatePerceptorRequest();
-		await GetClassifyImageMethod(request, (imageBytes1, "png") )();
+		await GetClassifyImageMethod(request, (imageBytes1, "png"))();
 		VerifyMockCalled(request, InstructionMethod.Classify, Times.Once());
 	}
 
@@ -394,7 +410,7 @@ public class ClientTests
 				fileStream.Item2,
 				request,
 				instruction, classes),
-			
+
 			ValueTuple<byte[], string> fileBytes => () => _sut.ClassifyImage(
 				fileBytes.Item1,
 				fileBytes.Item2,
@@ -402,9 +418,9 @@ public class ClientTests
 				instruction, classes),
 
 			_ => throw new ArgumentException("invalid parameter type")
-
 		};
 	}
+
 	[Test]
 	public async Task WITH_CustomParameters_WHEN_ClassifyDocumentImages_FromPaths_THEN_Is_Correct()
 	{
@@ -418,53 +434,53 @@ public class ClientTests
 			TestHelperMethods.GetTestFilePath("binary_file.png")
 		};
 
-		var res = await GetClassifyDocumentImagesMethod(request,expectedSuccessResult, imagePaths)();
+		var res = await GetClassifyDocumentImagesMethod(request, expectedSuccessResult, imagePaths)();
 		res.Should().HaveCount(imagePaths.Length);
 		AssertAllPageIndexes(res, imagePaths.Length);
 		AssertAllAnswersAre(res, expectedSuccessResult.Answer);
 	}
-	
+
 	[Test]
 	public async Task WITH_CustomParameters_WHEN_ClassifyDocumentImages_FromStreams_THEN_Is_Correct()
 	{
 		var expectedSuccessResult = new PerceptorSuccessResult("some result");
 		SetupRepositoryResult(expectedSuccessResult);
-	
+
 		PerceptorRequest request = CreatePerceptorRequest();
 		(Stream, string)[] fileTuples =
 		{
 			(File.OpenRead(TestHelperMethods.GetTestFilePath("binary_file.png")), "png"),
 			(File.OpenRead(TestHelperMethods.GetTestFilePath("binary_file.png")), "png"),
 		};
-	
-		var res = await GetClassifyDocumentImagesMethod(request,expectedSuccessResult, fileTuples)();
-	
+
+		var res = await GetClassifyDocumentImagesMethod(request, expectedSuccessResult, fileTuples)();
+
 		res.Should().HaveCount(fileTuples.Length);
 		AssertAllPageIndexes(res, fileTuples.Length);
 		AssertAllAnswersAre(res, expectedSuccessResult.Answer);
 	}
-	
+
 	[Test]
 	public async Task WITH_CustomParameters_WHEN_ClassifyDocumentImages_FromBytes_THEN_Is_Correct()
 	{
 		var expectedSuccessResult = new PerceptorSuccessResult("some result");
 		SetupRepositoryResult(expectedSuccessResult);
-	
+
 		PerceptorRequest request = CreatePerceptorRequest();
 		(byte[], string)[] fileTuples =
 		{
 			(await File.ReadAllBytesAsync(TestHelperMethods.GetTestFilePath("binary_file.png")), "png"),
 			(await File.ReadAllBytesAsync(TestHelperMethods.GetTestFilePath("binary_file.png")), "png"),
 		};
-	
-		var res = await GetClassifyDocumentImagesMethod(request,expectedSuccessResult, fileTuples)();
-	
+
+		var res = await GetClassifyDocumentImagesMethod(request, expectedSuccessResult, fileTuples)();
+
 		res.Should().HaveCount(fileTuples.Length);
 		AssertAllPageIndexes(res, fileTuples.Length);
 		AssertAllAnswersAre(res, expectedSuccessResult.Answer);
 	}
-	
-	private Func<Task<IReadOnlyList<DocumentImageResult>>> GetClassifyDocumentImagesMethod(PerceptorRequest request, 
+
+	private Func<Task<IReadOnlyList<DocumentImageResult>>> GetClassifyDocumentImagesMethod(PerceptorRequest request,
 		OneOf<PerceptorSuccessResult, PerceptorError> expectedResult,
 		object methodParams)
 	{
@@ -484,18 +500,17 @@ public class ClientTests
 				fileStreams,
 				request,
 				instruction, classes),
-			
+
 			IEnumerable<ValueTuple<byte[], string>> fileBytes => () => _sut.ClassifyDocumentImages(
 				fileBytes,
 				request,
 				instruction, classes),
 
 			_ => throw new ArgumentException("invalid parameter type")
-
 		};
 	}
 
-	
+
 	private void SetupRepositoryResult(OneOf<PerceptorSuccessResult, PerceptorError> toReturn)
 	{
 		_repositoryMock.Setup(x => x.SendInstruction(It.IsAny<PerceptorRequestPayload>(),
