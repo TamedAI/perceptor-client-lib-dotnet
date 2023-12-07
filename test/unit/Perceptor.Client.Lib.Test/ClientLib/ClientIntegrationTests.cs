@@ -18,10 +18,10 @@ public class ClientIntegrationTests
 		IConfigurationBuilder builder = new ConfigurationBuilder()
 			.AddJsonFile("client-config.json");
 
-		var config = builder.Build();
+		IConfigurationRoot config = builder.Build();
 
-		var apiKey = config.GetSection("TAI_PERCEPTOR_API_KEY").Value;
-		var apiUrl = config.GetSection("TAI_PERCEPTOR_BASE_URL").Value;
+		string? apiKey = config.GetSection("TAI_PERCEPTOR_API_KEY").Value;
+		string? apiUrl = config.GetSection("TAI_PERCEPTOR_BASE_URL").Value;
 		
 		
 		var settings = new ClientSettings(apiKey, apiUrl)
@@ -64,7 +64,7 @@ Meine Vermittlernumer ist die 090.100.
 			"ist es dringend?"
 		};
 
-		var results = await _sut.AskText(_TEXT_TO_PROCESS,
+		IReadOnlyList<InstructionWithResult>? results = await _sut.AskText(_TEXT_TO_PROCESS,
 			PerceptorRequest.WithFlavor("original").WithReturnScores(), instructions);
 
 		results.Should().HaveSameCount(instructions);
@@ -101,8 +101,8 @@ Meine Vermittlernumer ist die 090.100.
 	[Test]
 	public async Task AskImage()
 	{
-		var imagePath = TestHelperMethods.GetTestFilePath("invoice.jpg");
-		var results = await _sut.AskImage(imagePath,
+		string imagePath = TestHelperMethods.GetTestFilePath("invoice.jpg");
+		IReadOnlyList<InstructionWithResult>? results = await _sut.AskImage(imagePath,
 			PerceptorRequest.WithFlavor("original").WithReturnScores(),
 			new[]
 			{
@@ -118,8 +118,8 @@ Meine Vermittlernumer ist die 090.100.
 	[Test]
 	public async Task ClassifyImage()
 	{
-		var imagePath = TestHelperMethods.GetTestFilePath("invoice.jpg");
-		var results = await _sut.ClassifyImage(imagePath,
+		string imagePath = TestHelperMethods.GetTestFilePath("invoice.jpg");
+		InstructionWithResult? results = await _sut.ClassifyImage(imagePath,
 			PerceptorRequest.WithFlavor("original").WithReturnScores(),
 			"Was ist das für ein Dokument?",
 			new []{"Rechnung", "Antrag", "Rezept"}
@@ -131,14 +131,38 @@ Meine Vermittlernumer ist die 090.100.
 	[Test]
 	public async Task ClassifyDocumentImages()
 	{
-		var imagePath = TestHelperMethods.GetTestFilePath("invoice.jpg");
-		var results = await _sut.ClassifyDocumentImages(new[]{imagePath, imagePath},
+		string imagePath = TestHelperMethods.GetTestFilePath("invoice.jpg");
+		IReadOnlyList<DocumentImageResult>? results = await _sut.ClassifyDocumentImages(new[]{imagePath, imagePath},
 			PerceptorRequest.WithFlavor("original").WithReturnScores(),
 			"Was ist das für ein Dokument?",
 			new []{"Rechnung", "Antrag", "Rezept"}
 		);
 		
 		LogAndAssertResponse(results);
+	}
+
+	[Test]
+	public async Task AskDocumentImages()
+	{
+		string[] imagePaths = new[]
+		{
+			TestHelperMethods.GetTestFilePath("invoice.jpg"),
+			TestHelperMethods.GetTestFilePath("invoice.jpg"),
+		};
+
+		IReadOnlyList<DocumentImageResult>? results = await _sut.AskDocumentImages(imagePaths,
+			PerceptorRequest.WithFlavor("original").WithReturnScores(),
+			new[]
+			{
+				"What is the invoice number?",
+				"What is the invoice date?",
+				"To whom is the invoice billed?",
+			}
+		);
+
+		IReadOnlyList<InstructionWithPageResult> groupedResults = results.GroupByInstruction();
+		LogAndAssertResponse(groupedResults);
+
 	}
 
 	private static void LogAndAssertResponse(IReadOnlyList<InstructionWithResult> results)
@@ -151,6 +175,22 @@ Meine Vermittlernumer ist die 090.100.
 		}
 
 		results.Should().AllSatisfy(r => r.IsSuccess.Should().BeTrue(because: r.ErrorText));
+	}
+
+	private static void LogAndAssertResponse(IReadOnlyList<InstructionWithPageResult> results)
+	{
+		foreach (InstructionWithPageResult instructionWithPageResult in results)
+		{
+			foreach (DocumentPageWithResult pageResult in instructionWithPageResult.PageResults)
+			{
+				LogText(pageResult.IsSuccess
+					? $"Instruction: '{instructionWithPageResult.InstructionText}', response: '{DumpResponseDictionary(pageResult.Response)}'"
+					: $"Instruction: '{instructionWithPageResult.InstructionText}', error response: '{pageResult.ErrorText}'");	
+			}
+		}
+		
+		results.SelectMany(x=>x.PageResults).Should().AllSatisfy(
+			r => r.IsSuccess.Should().BeTrue(because: r.ErrorText));
 	}
 
 	private static void LogAndAssertResponse(IReadOnlyList<DocumentImageResult> results)

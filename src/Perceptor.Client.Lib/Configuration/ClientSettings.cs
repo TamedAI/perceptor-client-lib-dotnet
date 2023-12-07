@@ -36,7 +36,7 @@ namespace Perceptor.Client.Lib.Configuration
 		/// <summary>
 		/// Maximal number of parallel requests
 		/// </summary>
-		public int MaximalNumberOfParallelRequests { get; set; }  = 5;
+		public int MaximalNumberOfParallelRequests { get; set; }  = 3;
 
 		/// <summary>
 		/// Number of retries in case of failed requests

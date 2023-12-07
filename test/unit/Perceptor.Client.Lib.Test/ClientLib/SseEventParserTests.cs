@@ -21,12 +21,12 @@ event: generate
 data: Hans
 
 event: generate
-data: Hans Helvetia
+data: Hans Mustermann
 
 event: finished
-data: Hans Helvetia
+data: Hans Mustermann
 ",
-			new object[] { new SsEvent("Hans Helvetia") }
+			new object[] { new SsEvent("Hans Mustermann") }
 		},
 		new object[]{"", Array.Empty<object>()},
 		new object[]{"event: waiting", Array.Empty<object>()},

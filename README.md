@@ -26,12 +26,13 @@ Example code to create a client instance and send a instruction for a text:
 
 ```csharp
 const string textToProcess = @"
-Ich melde einen Schaden für meinen Kunden Hans Helvetia. Er hatte einen Schaden durch eine Überschwemmung. 
+Ich melde einen Schaden für meinen Kunden Hans Mustermann. Er hatte einen Schaden durch eine Überschwemmung. 
 Er hat Rechnungen in Höhe von 150000 Euro eingereicht. Der Schaden soll in 2 Chargen bezahlt werden. 
 Seine  IBAN ist DE02300606010002474689. Versicherungsbeginn war der 01.10.2022. Er ist abgesichert bis 750.000 EUR. Der Ablauf der Versicherung ist der 01.10.2026. 
 Der Kunde hat VIP-Kennzeichen und hatte schonmal einen Leitungswasserschaden in Höhe von 3840 Euro. 
-Der Schaden ist 2021 aufgetreten. Die Anschrift des Kunden ist: Berliner Straße 56, 60311 Frankfurt am Main.
-
+Der Kunde möchte eine Antwort heute oder morgen erhalten. 
+Der Schaden ist 2021 aufgetreten. Die Anschrift des Kunden ist: Leipzigerstr. 12, 21390 Bonn.
+Für Rückfragen möchte ich per Telefon kontaktiert werden. Es ist eine dringende Angelegenheit.
 Meine Vermittlernumer ist die 090.100.
 ";
 
@@ -89,4 +90,38 @@ beside the _InstructionWithResult_ list, also the original page info:<br>
 _askDocumentImagePaths_<br>
 _askDocumentImageStreams_<br>
 _askDocumentImageBytes_<br>
+
+## Mapping response
+If you use the methods returning the list of _DocumentImageResult_ and need to have the responses grouped by instruction
+rather than page, you can use the provided utility extension method (_Utils.GroupByInstruction_) to map the response:
+
+```csharp
+		IReadOnlyList<DocumentImageResult>? results = await _sut.AskDocumentImages(imagePaths,
+			PerceptorRequest.WithFlavor("original").WithReturnScores(),
+			new[]
+			{
+				"What is the invoice number?",
+				"What is the invoice date?",
+				"To whom is the invoice billed?",
+			}
+		);
+
+		IReadOnlyList<InstructionWithPageResult> groupedResults = results.GroupByInstruction();
+        
+        foreach (InstructionWithPageResult instructionWithPageResult in groupedResults)
+		{
+			foreach (DocumentPageWithResult pageResult in instructionWithPageResult.PageResults)
+			{
+				Console.WriteLine($"Instruction: {instructionWithPageResult.InstructionText}");
+				if (pageResult.IsSuccess)
+				{
+					Console.WriteLine($"page: {pageResult.PageIndex}, response: {pageResult.Response}");
+				}
+				else
+				{
+					Console.WriteLine($"page: {pageResult.PageIndex}, error: {pageResult.ErrorText}");
+				}	
+			}
+		}
+```
 

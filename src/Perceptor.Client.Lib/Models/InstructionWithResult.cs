@@ -35,7 +35,7 @@ namespace Perceptor.Client.Lib.Models
 		/// </summary>
 		public string ErrorText { get; }
 
-		private static InstructionWithResult Success(string instructionText,
+		internal static InstructionWithResult Success(string instructionText,
 			IReadOnlyDictionary<string, object> response) =>
 			new InstructionWithResult(instructionText, true, response, String.Empty);
 
