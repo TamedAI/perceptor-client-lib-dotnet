@@ -1,0 +1,55 @@
+name: release
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  VERSION_NUMBER: ${{ github.ref_name }}
+  RELEASE_ID: ${{ github.ref }}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Build release package
+        run: dotnet pack src/Perceptor.Client.Lib/Perceptor.Client.Lib.csproj  -c Release  -o dist -p:NuspecFile=Perceptor.Client.Lib.nuspec -p:NuspecProperties="Version=${{ env.VERSION_NUMBER }}"
+
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ env.RELEASE_ID }}
+          tag_name: ${{ env.RELEASE_ID  }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: upload .nuget package
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/Perceptor.Client.${{ env.VERSION_NUMBER }}.nupkg
+          asset_name: dist/Perceptor.Client.${{ env.VERSION_NUMBER }}.nupkg
+          asset_content_type: application/gzip
+

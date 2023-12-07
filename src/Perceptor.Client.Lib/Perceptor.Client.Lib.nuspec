@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Perceptor.Client</id>
+        <version>$version$</version>
+        <authors>TamedAI GmbH</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>TamedAi client</description>netstandard2.0
+        <copyright>Copyright 2023</copyright>
+        <tags>TamedAI IDP Perceptor LLM</tags>
+        <readme>README.md</readme>
+        <dependencies>
+            <group targetFramework="netstandard2.0,net6.0">
+                <dependency id="Polly" version="7.2.4" />
+                <dependency id="Flurl" version="3.0.7" />
+                <dependency id="System.Text.Json" version="7.0.3" />
+            </group>
+        </dependencies>
+    </metadata>
+
+    <files>
+        <file src="bin/Release/netstandard2.0/Perceptor.Client.Lib.dll" target="lib/netstandard2.0" />
+        <file src="bin/Release/netstandard2.0/Perceptor.Client.Lib.xml" target="lib/netstandard2.0" />
+        <file src="README.md" target="" />
+        <file src="../../LICENSE" target="LICENSE" />
+    </files>
+</package>

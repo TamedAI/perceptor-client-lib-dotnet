@@ -1,0 +1,35 @@
+name: .Net CI
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+env:
+  BASE_PACKAGE_VERSION: 0.4.0
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore -c Release
+      - name: Test
+        run: dotnet test --no-build --verbosity normal  -c Release
+      - name: Build dev package artefact
+        run: dotnet pack src/Perceptor.Client.Lib/Perceptor.Client.Lib.csproj  -c Release  -o dist  -p:NuspecFile=Perceptor.Client.Lib.nuspec -p:NuspecProperties="Version=${{ env.BASE_PACKAGE_VERSION }}-dev${{ github.run_id }}"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Package
+          path: dist/

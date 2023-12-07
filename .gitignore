@@ -100,3 +100,4 @@ ClientBin/
 /.idea/
 /.vs/
 /test/unit/Perceptor.Client.Lib.Test/client-config.json
+/dist/
