@@ -6,7 +6,7 @@ on:
       - '**'
   pull_request:
 env:
-  BASE_PACKAGE_VERSION: 0.4.0
+  BASE_PACKAGE_VERSION: 0.6.0
 
 permissions:
   contents: read
