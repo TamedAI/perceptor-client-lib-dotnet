@@ -1,8 +1,25 @@
-﻿using FluentAssertions;
+﻿// /*
+// Copyright 2023 TamedAI GmbH
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// */
+
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Perceptor.Client.Lib.Configuration;
 using Perceptor.Client.Lib.Models;
 using Perceptor.Client.Lib.Services;
+
 // ReSharper disable StringLiteralTypo
 
 namespace Perceptor.Client.Lib.Test.ClientLib;
@@ -22,8 +39,8 @@ public class ClientIntegrationTests
 
 		string? apiKey = config.GetSection("TAI_PERCEPTOR_API_KEY").Value;
 		string? apiUrl = config.GetSection("TAI_PERCEPTOR_BASE_URL").Value;
-		
-		
+
+
 		var settings = new ClientSettings(apiKey, apiUrl)
 		{
 			WaitTimeout = TimeSpan.FromSeconds(30),
@@ -47,7 +64,8 @@ Meine Vermittlernumer ist die 090.100.
 	[Test]
 	public async Task AskText()
 	{
-		string[] instructions = {
+		string[] instructions =
+		{
 			"Vorname und Nachname des Kunden?",
 			"Ist der Kunde ein VIP? (Ja oder nein)",
 			"was ist die IBAN?",
@@ -68,7 +86,7 @@ Meine Vermittlernumer ist die 090.100.
 			PerceptorRequest.WithFlavor("original").WithReturnScores(), instructions);
 
 		results.Should().HaveSameCount(instructions);
-		
+
 		LogAndAssertResponse(results);
 	}
 
@@ -78,13 +96,14 @@ Meine Vermittlernumer ist die 090.100.
 		InstructionWithResult? result = await _sut.ClassifyText(_TEXT_TO_PROCESS,
 			PerceptorRequest.WithFlavor("original").WithReturnScores(),
 			"was ist das für ein Text?",
-			new [] {
+			new[]
+			{
 				"versicherung",
 				"Schadenmeldung",
 				"letter",
 				"brief"
 			}
-			);
+		);
 
 		LogAndAssertResponse(result);
 	}
@@ -111,7 +130,7 @@ Meine Vermittlernumer ist die 090.100.
 				"To whom is the invoice billed?",
 			}
 		);
-		
+
 		LogAndAssertResponse(results);
 	}
 
@@ -122,22 +141,22 @@ Meine Vermittlernumer ist die 090.100.
 		InstructionWithResult? results = await _sut.ClassifyImage(imagePath,
 			PerceptorRequest.WithFlavor("original").WithReturnScores(),
 			"Was ist das für ein Dokument?",
-			new []{"Rechnung", "Antrag", "Rezept"}
+			new[] { "Rechnung", "Antrag", "Rezept" }
 		);
-		
+
 		LogAndAssertResponse(results);
 	}
-	
+
 	[Test]
 	public async Task ClassifyDocumentImages()
 	{
 		string imagePath = TestHelperMethods.GetTestFilePath("invoice.jpg");
-		IReadOnlyList<DocumentImageResult>? results = await _sut.ClassifyDocumentImages(new[]{imagePath, imagePath},
+		IReadOnlyList<DocumentImageResult>? results = await _sut.ClassifyDocumentImages(new[] { imagePath, imagePath },
 			PerceptorRequest.WithFlavor("original").WithReturnScores(),
 			"Was ist das für ein Dokument?",
-			new []{"Rechnung", "Antrag", "Rezept"}
+			new[] { "Rechnung", "Antrag", "Rezept" }
 		);
-		
+
 		LogAndAssertResponse(results);
 	}
 
@@ -162,7 +181,6 @@ Meine Vermittlernumer ist die 090.100.
 
 		IReadOnlyList<InstructionWithPageResult> groupedResults = results.GroupByInstruction();
 		LogAndAssertResponse(groupedResults);
-
 	}
 
 	private static void LogAndAssertResponse(IReadOnlyList<InstructionWithResult> results)
@@ -185,11 +203,11 @@ Meine Vermittlernumer ist die 090.100.
 			{
 				LogText(pageResult.IsSuccess
 					? $"Instruction: '{instructionWithPageResult.InstructionText}', response: '{DumpResponseDictionary(pageResult.Response)}'"
-					: $"Instruction: '{instructionWithPageResult.InstructionText}', error response: '{pageResult.ErrorText}'");	
+					: $"Instruction: '{instructionWithPageResult.InstructionText}', error response: '{pageResult.ErrorText}'");
 			}
 		}
-		
-		results.SelectMany(x=>x.PageResults).Should().AllSatisfy(
+
+		results.SelectMany(x => x.PageResults).Should().AllSatisfy(
 			r => r.IsSuccess.Should().BeTrue(because: r.ErrorText));
 	}
 
@@ -201,11 +219,11 @@ Meine Vermittlernumer ist die 090.100.
 			{
 				LogText(singleResult.IsSuccess
 					? $"Instruction: '{singleResult.InstructionText}', response: '{DumpResponseDictionary(singleResult.Response)}'"
-					: $"Instruction: '{singleResult.InstructionText}', error response: '{singleResult.ErrorText}'");				
+					: $"Instruction: '{singleResult.InstructionText}', error response: '{singleResult.ErrorText}'");
 			}
 		}
-		
-		results.SelectMany(x=>x.Results).Should().AllSatisfy(r => r.IsSuccess.Should().BeTrue(because: r.ErrorText));
+
+		results.SelectMany(x => x.Results).Should().AllSatisfy(r => r.IsSuccess.Should().BeTrue(because: r.ErrorText));
 	}
 
 	private static void LogText(string toLog)
@@ -217,5 +235,4 @@ Meine Vermittlernumer ist die 090.100.
 	{
 		return SerializationService.Serialize(input);
 	}
-	
 }

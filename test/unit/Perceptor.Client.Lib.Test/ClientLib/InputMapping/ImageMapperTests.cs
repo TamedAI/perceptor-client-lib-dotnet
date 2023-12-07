@@ -1,4 +1,20 @@
-﻿using FluentAssertions;
+﻿// /*
+// Copyright 2023 TamedAI GmbH
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// */
+
+using FluentAssertions;
 using Perceptor.Client.Lib.InputMapping;
 using Perceptor.Client.Lib.InternalModels;
 
@@ -7,7 +23,6 @@ namespace Perceptor.Client.Lib.Test.ClientLib.InputMapping;
 [TestFixture]
 public class ImageMapperTests
 {
-
 	[Test]
 	public void ImageFile_Mapped_Correctly()
 	{
@@ -30,7 +45,7 @@ public class ImageMapperTests
 		result.ContextType.Should().Be("image");
 		result.Content.Should().Be("data:image/png;base64,MXg=");
 	}
-	
+
 	[Test]
 	public async Task ImageBytes_Mapped_Correctly()
 	{
@@ -50,7 +65,7 @@ public class ImageMapperTests
 	public void GIVEN_Invalid_FileType_WHEN_Opening_THEN_Exception_Is_Raised()
 	{
 		var filePath = TestHelperMethods.GetTestFilePath("invalid_file.bmp");
-		Action openAction = ()=> InstructionContextImageMapper.MapFromFile(filePath);
+		Action openAction = () => InstructionContextImageMapper.MapFromFile(filePath);
 		openAction.Should().Throw<ArgumentException>();
 	}
 
@@ -77,5 +92,4 @@ public class ImageMapperTests
 	{
 		InstructionContextImageMapper.IsValidFileType(fileExtension).Should().Be(expectedIsValid);
 	}
-
 }

@@ -1,4 +1,20 @@
-﻿using System;
+﻿// /*
+// Copyright 2023 TamedAI GmbH
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -27,7 +43,8 @@ namespace Perceptor.Client.Lib
 			PerceptorRequest request,
 			IEnumerable<string> textInstructions,
 			CancellationToken cancellationToken) =>
-			AskInContext(contextData, request, InstructionMethod.Question, textInstructions, Enumerable.Empty<string>(), cancellationToken);
+			AskInContext(contextData, request, InstructionMethod.Question, textInstructions, Enumerable.Empty<string>(),
+				cancellationToken);
 
 		internal Task<InstructionWithResult> AskTableInContext(
 			InstructionContextData contextData,
@@ -38,24 +55,24 @@ namespace Perceptor.Client.Lib
 				InstructionMethod.Table,
 				contextData,
 				request,
-				textInstruction, 
-				Enumerable.Empty<string>(), 
+				textInstruction,
+				Enumerable.Empty<string>(),
 				cancellationToken
 			);
 
-		
+
 		internal Task<InstructionWithResult> AskClassifyInContext(
 			InstructionContextData contextData,
 			PerceptorRequest request,
 			string textInstruction,
 			IEnumerable<string> classes,
-			CancellationToken cancellationToken)=>
+			CancellationToken cancellationToken) =>
 			AskSingleInstructionInContext(
 				InstructionMethod.Classify,
 				contextData,
 				request,
-				textInstruction, 
-				classes, 
+				textInstruction,
+				classes,
 				cancellationToken
 			);
 
@@ -72,9 +89,11 @@ namespace Perceptor.Client.Lib
 				classes,
 				cancellationToken);
 
-			return res.Any() ? res.First() : InstructionWithResult.Error(textInstruction, ErrorConstants.UnknownError.ErrorText);
+			return res.Any()
+				? res.First()
+				: InstructionWithResult.Error(textInstruction, ErrorConstants.UnknownError.ErrorText);
 		}
-		
+
 		private async Task<IReadOnlyList<InstructionWithResult>> AskInContext(InstructionContextData contextData,
 			PerceptorRequest request,
 			InstructionMethod method,
@@ -96,13 +115,13 @@ namespace Perceptor.Client.Lib
 			return InstructionWithResult.FromResponseModels(responseModel);
 		}
 
-		internal async Task<IReadOnlyList<DocumentImageResult>> AskTableInMultipleContexts(
+		internal Task<IReadOnlyList<DocumentImageResult>> AskTableInMultipleContexts(
 			IEnumerable<InstructionContextData> contexts,
 			PerceptorRequest request,
 			string instruction,
 			IEnumerable<string> classes,
 			CancellationToken cancellationToken) =>
-			await AskInMultipleContexts(contexts,
+			AskInMultipleContexts(contexts,
 				request,
 				InstructionMethod.Table,
 				new[] { instruction },
@@ -130,7 +149,7 @@ namespace Perceptor.Client.Lib
 
 			async Task<DocumentImageResult> ProcessContext(int index, InstructionContextData contextData)
 			{
-				var response = await AskInContext(contextData, request, method, instructionsAsList, 
+				var response = await AskInContext(contextData, request, method, instructionsAsList,
 					classes,
 					cancellationToken);
 				return new DocumentImageResult(index, response);

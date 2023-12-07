@@ -1,4 +1,20 @@
-﻿using System;
+﻿// /*
+// Copyright 2023 TamedAI GmbH
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -27,7 +43,7 @@ namespace Perceptor.Client.Lib.DotNetFrmwk.Test
 			_repositoryMock = new Mock<IPerceptorRepository>();
 
 			_sut = PerceptorClientFactory.CreateForRepository(
-				new ClientSettings("key",  "some_url"){ WaitTimeout = TimeSpan.FromSeconds(40) },
+				new ClientSettings("key", "some_url") { WaitTimeout = TimeSpan.FromSeconds(40) },
 				_repositoryMock.Object);
 
 			_fixture = new Fixture();
@@ -101,8 +117,8 @@ namespace Perceptor.Client.Lib.DotNetFrmwk.Test
 				VerifyMockCalled(request, InstructionMethod.Question, Times.Exactly(instructions.Length));
 			}
 		}
-		
-	
+
+
 		[Test]
 		public async Task WITH_CustomParameters_WHEN_AskTableFromImageStream_THEN_Is_Correct()
 		{
@@ -116,10 +132,10 @@ namespace Perceptor.Client.Lib.DotNetFrmwk.Test
 				InstructionWithResult res = await _sut.AskTableFromImage(imageStream, "png",
 					request,
 					"generate table");
-				
+
 				res.InstructionText.Should().Be(tableInstruction);
 				AssertResponseText(res, expectedSuccessResult.Answer);
-				
+
 				VerifyMockCalled(request, InstructionMethod.Table, Times.Once());
 			}
 		}
@@ -141,11 +157,11 @@ namespace Perceptor.Client.Lib.DotNetFrmwk.Test
 			Times times)
 		{
 			_repositoryMock.Verify(x => x.SendInstruction(
-				It.Is<PerceptorRequestPayload>(p => 
-					p.Request == requestParameters && p.Method==method),
+				It.Is<PerceptorRequestPayload>(p =>
+					p.Request == requestParameters && p.Method == method),
 				It.IsAny<CancellationToken>()), times);
 		}
-		
+
 		private static void AssertResponseText(InstructionWithResult instructionWithResult, string expected)
 		{
 			instructionWithResult.Response.Should().ContainKey("text");

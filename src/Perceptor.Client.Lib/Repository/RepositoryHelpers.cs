@@ -1,4 +1,20 @@
-﻿using System;
+﻿// /*
+// Copyright 2023 TamedAI GmbH
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -13,13 +29,13 @@ namespace Perceptor.Client.Lib.Repository
 	{
 		public static string MapToPayloadString(PerceptorRequestPayload payload, WaitTimeOut waitTimeout)
 		{
-			IReadOnlyDictionary<string,string> parametersDictionary = payload.Request.Parameters;
+			IReadOnlyDictionary<string, string> parametersDictionary = payload.Request.Parameters;
 			var parametersWithReturnScores = parametersDictionary
 				.Select(x => x)
 				.Append(new KeyValuePair<string, string>("returnScores",
 					payload.Request.ReturnScores ? "true" : "false"))
 				.ToDictionary(x => x.Key, x => x.Value);
-			
+
 			var dictionary = new Dictionary<string, object>()
 			{
 				{ "flavor", payload.Request.Flavor },
@@ -40,7 +56,7 @@ namespace Perceptor.Client.Lib.Repository
 		public static string MapBadRequestContentString(this string content)
 		{
 			const string detailKey = "detail";
-			
+
 			try
 			{
 				var dict = SerializationService.Deserialize<Dictionary<string, object>>(content);
@@ -51,19 +67,16 @@ namespace Perceptor.Client.Lib.Repository
 				}
 
 				return content;
-
 			}
 			catch (JsonException)
 			{
 				return content;
 			}
-			
 		}
 
 		internal static async Task<string> GetResponseTextContent(this HttpResponseMessage responseMessage)
 		{
 			return await responseMessage.Content.ReadAsStringAsync();
 		}
-		
 	}
 }

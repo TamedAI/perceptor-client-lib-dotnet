@@ -1,4 +1,20 @@
-﻿using System.Collections.Generic;
+﻿// /*
+// Copyright 2023 TamedAI GmbH
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// */
+
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +26,6 @@ namespace Perceptor.Client.Lib
 {
 	public static class PerceptorClientExtensions
 	{
-
 		/// <summary>
 		/// Sends instructions for the specified <paramref name="textToAsk"/>
 		/// </summary>
@@ -51,8 +66,7 @@ namespace Perceptor.Client.Lib
 				instruction,
 				classes,
 				cancellationToken);
-		
-		
+
 
 		/// <summary>
 		/// Sends instructions for an image with specified <paramref name="imageFilePath"/>.
@@ -64,11 +78,13 @@ namespace Perceptor.Client.Lib
 		/// <param name="instructions">List of instructions to perform</param>
 		/// <param name="cancellationToken">Cancellation token</param>
 		/// <returns>List of <see cref="InstructionWithResult"/> containing instructions and their answers</returns>
-		public static async Task<IReadOnlyList<InstructionWithResult>> AskImage(this PerceptorClient client, string imageFilePath,
+		public static async Task<IReadOnlyList<InstructionWithResult>> AskImage(this PerceptorClient client,
+			string imageFilePath,
 			PerceptorRequest request,
 			IEnumerable<string> instructions,
 			CancellationToken cancellationToken = default) =>
-			await client.AskQuestionInContext(InstructionContextImageMapper.MapFromFile(imageFilePath), request, instructions, cancellationToken);
+			await client.AskQuestionInContext(InstructionContextImageMapper.MapFromFile(imageFilePath), request,
+				instructions, cancellationToken);
 
 		/// <summary>
 		/// Sends classify instruction for the specified <paramref name="imageFilePath"/>
@@ -86,7 +102,8 @@ namespace Perceptor.Client.Lib
 			string instruction,
 			IEnumerable<string> classes,
 			CancellationToken cancellationToken = default) =>
-			await client.AskClassifyInContext(InstructionContextImageMapper.MapFromFile(imageFilePath), request, instruction, classes, cancellationToken);
+			await client.AskClassifyInContext(InstructionContextImageMapper.MapFromFile(imageFilePath), request,
+				instruction, classes, cancellationToken);
 
 		/// <summary>
 		/// Sends instructions for an image with specified <paramref name="imageStream"/>.
@@ -104,7 +121,8 @@ namespace Perceptor.Client.Lib
 			PerceptorRequest request,
 			IEnumerable<string> instructions,
 			CancellationToken cancellationToken = default) =>
-			await client.AskQuestionInContext(await InstructionContextImageMapper.MapFromStream(imageStream, fileType), request, instructions, cancellationToken);
+			await client.AskQuestionInContext(await InstructionContextImageMapper.MapFromStream(imageStream, fileType),
+				request, instructions, cancellationToken);
 
 		/// <summary>
 		/// Sends classify instruction for the specified <paramref name="imageStream"/>
@@ -142,7 +160,8 @@ namespace Perceptor.Client.Lib
 			PerceptorRequest request,
 			IEnumerable<string> instructions,
 			CancellationToken cancellationToken = default) =>
-			await client.AskQuestionInContext(InstructionContextImageMapper.MapFromBytes(fileBytes, fileType), request, instructions, cancellationToken);
+			await client.AskQuestionInContext(InstructionContextImageMapper.MapFromBytes(fileBytes, fileType), request,
+				instructions, cancellationToken);
 
 		/// <summary>
 		/// Sends classify instruction for the specified <paramref name="fileBytes"/>
@@ -155,7 +174,7 @@ namespace Perceptor.Client.Lib
 		/// <param name="classes">list of classes ("document", "invoice" etc.)</param>
 		/// <param name="cancellationToken">Cancellation token</param>
 		/// <returns><see cref="InstructionWithResult"/> containing instruction and response</returns>
-		public static async Task<InstructionWithResult> ClassifyImage(this PerceptorClient client, 
+		public static async Task<InstructionWithResult> ClassifyImage(this PerceptorClient client,
 			byte[] fileBytes,
 			string fileType,
 			PerceptorRequest request,
@@ -202,7 +221,8 @@ namespace Perceptor.Client.Lib
 			string instruction,
 			CancellationToken cancellationToken = default)
 		{
-			InstructionContextData imageCtxData = await InstructionContextImageMapper.MapFromStream(imageStream, fileType);
+			InstructionContextData imageCtxData =
+				await InstructionContextImageMapper.MapFromStream(imageStream, fileType);
 			return await client.AskTableInContext(imageCtxData,
 				request,
 				instruction,
@@ -210,7 +230,7 @@ namespace Perceptor.Client.Lib
 			);
 		}
 
-		
+
 		/// <summary>
 		/// Sends a table instruction for the specified image.
 		/// </summary>
@@ -232,6 +252,5 @@ namespace Perceptor.Client.Lib
 				instruction,
 				cancellationToken
 			);
-
 	}
 }

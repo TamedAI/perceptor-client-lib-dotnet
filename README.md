@@ -5,6 +5,7 @@
 Add following dependency (via cli or IDE): "Perceptor.Client"
 
 To create a client instance:
+
 ```csharp
 ClientSettings clientSettings = new ClientSettings("your_api_key", "your_api_url")
 {
@@ -15,9 +16,11 @@ ClientSettings clientSettings = new ClientSettings("your_api_key", "your_api_url
 
 var client = PerceptorClientFactory.CreateFromSettings(clientSettings);
 ```
+
 (Replace "your_api_key" and "your_api_url" with your provided values)
 
 ### Creating request
+
 Use method _PerceptorRequest.Factory.withFlavor_ to create a request object without additional parameters.
 You have to specify the flavor name and binary flag whether the scores are to be calculated or not.
 To specify additional parameters use the constructor of _PerceptorRequest_.
@@ -68,12 +71,14 @@ Example code to create a client instance and send a classify instruction for an 
 
 ### Reading responses
 
-Basic class containing the processing result is _InstructionWithResult_ ([see here](src/Perceptor.Client.Lib/Models/InstructionWithResult.cs)).
+Basic class containing the processing result is
+_InstructionWithResult_ ([see here](src/Perceptor.Client.Lib/Models/InstructionWithResult.cs)).
 
 It contains following properties:<br>
 _instruction_ contains the original instruction text<br>
 _isSuccess_  set to True if the query was successful<br>
-_response_ is a map/dictionary containing at least "text" element (with actual response text) and may contain additional values (for example scores).<br>
+_response_ is a map/dictionary containing at least "text" element (with actual response text) and may contain additional
+values (for example scores).<br>
 _errorText_ error text (if error occurred)<br>
 
 Following methods return the list of _InstructionWithResult_ instances:<br>
@@ -85,13 +90,15 @@ _askTableFromImage_<br>
 _classifyText_<br>
 _classifyImage_<br>
 
-Following methods query multiple images (document images), hence return the list of [_DocumentImageResult_](src/Perceptor.Client.Lib/Models/DocumentImageResult.cs) instances, containing,
+Following methods query multiple images (document images), hence return the list of [
+_DocumentImageResult_](src/Perceptor.Client.Lib/Models/DocumentImageResult.cs) instances, containing,
 beside the _InstructionWithResult_ list, also the original page info:<br>
 _askDocumentImagePaths_<br>
 _askDocumentImageStreams_<br>
 _askDocumentImageBytes_<br>
 
 ## Mapping response
+
 If you use the methods returning the list of _DocumentImageResult_ and need to have the responses grouped by instruction
 rather than page, you can use the provided utility extension method (_Utils.GroupByInstruction_) to map the response:
 
